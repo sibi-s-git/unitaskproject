@@ -74,11 +74,32 @@ struct SignUpView: View {
             "orders": [:]     // New field: empty map/dictionary
         ]
 
-        userRef.setData(userData) { error in
+        // First, check if the university collection exists
+        let universityRef = db.collection(university)
+        universityRef.limit(to: 1).getDocuments { snapshot, error in
             if let error = error {
-                print("Error saving user data: \(error.localizedDescription)")
-            } else {
-                navigateToHomeView()
+                print("Error checking university collection: \(error.localizedDescription)")
+                return
+            }
+
+            if snapshot?.documents.isEmpty == true {
+                // If collection doesn't exist, add a placeholder document to create it
+                universityRef.document("placeholder").setData(["created": true]) { error in
+                    if let error = error {
+                        print("Error creating university collection: \(error.localizedDescription)")
+                        return
+                    }
+                    print("University collection \(university) created.")
+                }
+            }
+
+            // Now, save the user data
+            userRef.setData(userData) { error in
+                if let error = error {
+                    print("Error saving user data: \(error.localizedDescription)")
+                } else {
+                    navigateToHomeView()
+                }
             }
         }
     }
