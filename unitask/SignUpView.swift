@@ -11,6 +11,7 @@ struct SignUpView: View {
     @State private var selectedYear = "Freshman"
     @State private var instagramHandle = ""
     @State private var selectedGender = "Male"
+    @State private var showValidationAlert = false // Alert for missing fields
 
     let years = ["Freshman", "Sophomore", "Junior", "Senior", "Grad Student"]
     let genders = ["Male", "Female", "Other"]
@@ -48,7 +49,7 @@ struct SignUpView: View {
             .pickerStyle(MenuPickerStyle())
             .padding()
 
-            Button(action: registerUser) {
+            Button(action: validateFields) {
                 Text("Sign Up")
                     .frame(width: 250, height: 50)
                     .background(Color.blue)
@@ -57,6 +58,22 @@ struct SignUpView: View {
             }
         }
         .padding()
+        .alert(isPresented: $showValidationAlert) {
+            Alert(title: Text("Missing Fields"),
+                  message: Text("Please fill out all fields before signing up."),
+                  dismissButton: .default(Text("OK")))
+        }
+    }
+
+    /// **🔹 Validates all fields before allowing sign-up**
+    private func validateFields() {
+        if firstName.trimmingCharacters(in: .whitespaces).isEmpty ||
+            lastName.trimmingCharacters(in: .whitespaces).isEmpty ||
+            instagramHandle.trimmingCharacters(in: .whitespaces).isEmpty {
+            showValidationAlert = true
+        } else {
+            registerUser() // Proceed with registration
+        }
     }
 
     private func registerUser() {
