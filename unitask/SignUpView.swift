@@ -69,7 +69,9 @@ struct SignUpView: View {
             "year": selectedYear,
             "instagram": instagramHandle,
             "gender": selectedGender,
-            "university": university
+            "university": university,
+            "completed": 0,  // New field: default to 0
+            "orders": [:]     // New field: empty map/dictionary
         ]
 
         userRef.setData(userData) { error in
